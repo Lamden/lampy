@@ -1,4 +1,3 @@
-import json
 import os
 import capnp
 import capnp_schema
@@ -17,6 +16,14 @@ VALUE_TYPE_MAP = {
     bytes: 'data',
     bool: 'bool'
 }
+
+
+# IP should be http://XXX.XXX.XXX:XXXX format, use regex?
+def get_processor_and_nonce_from_masternode(vk: bytes, ip: str):
+    nonce_req = requests.get('{}/nonce/{}'.format(ip, vk.hex()))
+    processor = bytes.fromhex(nonce_req.json()['processor'])
+    nonce = nonce_req.json()['nonce']
+    return processor, nonce
 
 
 def build_transaction(wallet: Wallet, contract: str, function: str, kwargs: dict, stamps: int, processor: bytes, nonce: int):
@@ -59,6 +66,9 @@ def build_transaction(wallet: Wallet, contract: str, function: str, kwargs: dict
 
     return struct.to_bytes_packed()
 
-def get_masternode_vk(ip):
-    pass
+
+def submit_transaction(tx: bytes, ip: str):
+    return requests.post(ip, data=tx, verify=False)
+
+
 

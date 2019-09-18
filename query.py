@@ -1,4 +1,6 @@
 import requests
+from wallet import Wallet
+import tx as transaction
 
 
 class Connection:
@@ -29,9 +31,6 @@ class Connection:
         nonce = r.json()['nonce']
         return nonce
 
-    def submit_transaction(self, tx: bytes):
-        return requests.post('{}/'.format(self.ip), data=tx)
-
     def get_contracts(self):
         r = requests.get('{}/contracts'.format(self.ip))
         return r.json()['contracts']
@@ -41,6 +40,7 @@ class Connection:
         return r.json()['code']
 
     def get_variable(self):
+        pass
 
     def get_methods(self, contract: str):
         r = requests.get('{}/contracts/{}/methods'.format(self.ip, contract))
@@ -50,3 +50,24 @@ class Connection:
         r = requests.get('{}/latest_block'.format(self.ip))
         return r.json()['hash']
 
+
+class LamdenDriver(Connection):
+    def __init__(self, ip: str, wallet: Wallet):
+        super().__init__(ip=ip)
+        self.wallet = wallet
+
+    def submit_transaction(self, contract: str, function: str, kwargs: dict, stamps: int):
+
+        processor = self.vk
+        nonce = self.get_nonce(self.wallet.vk)
+
+        tx_bytes = transaction.build_transaction(wallet=self.wallet,
+                                                 contract=contract,
+                                                 function=function,
+                                                 kwargs=kwargs,
+                                                 stamps=stamps,
+                                                 processor=processor,
+                                                 nonce=nonce)
+
+        r = requests.post('{}/'.format(self.ip), data=tx_bytes)
+        return r.json()

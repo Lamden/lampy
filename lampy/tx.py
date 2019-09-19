@@ -1,10 +1,10 @@
 import os
 import capnp
-import capnp_schema
+from lampy import capnp_schema
 from decimal import Decimal
 import time
-from wallet import Wallet
-from pow import SHA3POWBytes
+from lampy.wallet import Wallet
+from lampy.pow import SHA3POWBytes
 
 transaction_capnp = capnp.load(os.path.dirname(capnp_schema.__file__) + '/transaction.capnp')
 

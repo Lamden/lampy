@@ -1,6 +1,6 @@
 import requests
-from wallet import Wallet
-import tx as transaction
+from lampy.wallet import Wallet
+from lampy import tx as transaction
 
 
 class Connection:

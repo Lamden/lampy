@@ -51,7 +51,7 @@ class Connection:
         return r.json()['hash']
 
 
-class LamdenDriver(Connection):
+class LamdenClient(Connection):
     def __init__(self, ip: str, wallet: Wallet):
         super().__init__(ip=ip)
         self.wallet = wallet

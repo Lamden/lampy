@@ -170,4 +170,21 @@ def transfer_from(amount, to, main_account):
 ```python
 >>> client.get_variable(contract='currency', variable='balances', key='stu')
 {'value': 1_000_000}
+
+# If I want to get the allowance, which uses a multihash, I need to supply a list of keys.
+# balances['stu', 'jeff'] => ['stu', 'jeff']
+
+>>> client.get_variable(contract='currency', variable='balances', key=['stu', 'jeff'])
+{'value': 100}
+```
+***
+#### Get Methods
+```python
+>>> client.get_methods('currency')
+[{'name': 'transfer', 'arguments': ['amount', 'to']}
+ {'name': 'balance_of', 'arguments': ['account']},
+ {'name': 'total_supply', 'arguments': []},
+ {'name': 'allowance', 'arguments': ['owner', 'spender']},
+ {'name': 'approve', 'arguments': ['amount', 'to']},
+ {'name': 'transfer_from', 'arguments': ['amount', 'to', 'main_account']}]
 ```

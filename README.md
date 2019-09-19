@@ -188,3 +188,11 @@ def transfer_from(amount, to, main_account):
  {'name': 'approve', 'arguments': ['amount', 'to']},
  {'name': 'transfer_from', 'arguments': ['amount', 'to', 'main_account']}]
 ```
+***
+#### Get Latest Block Hash
+```python
+>>> client.get_latest_block_hash()
+'3bf746ee27fc9154b0792182d55d1ff33a6a52092b8608fb53ae1d6c2fc21166'
+```
+
+That's about it! Example project soon.

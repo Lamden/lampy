@@ -33,6 +33,16 @@ wallet = Wallet(seed=sk)
 b'\x1d#\xc4\xc1W\x1a\xe3\xa5I\xb7\x14\xc0\x90\x80X\xce\xb9\xc3\xa2r\x80\x8e\xc7\x8f\x97\xa2\x93\x12\n\x17\x07='
 ```
 ***
+##### I want a pretty wallet!
+```python
+from lampy.wallet import Wallet
+sk = b'D\x12\x87\x83\xcfN\xa0"\x06Dn\x9d\xb0F\x13\xa3\xb3\xdb\x8f\xb8\x8c\xfa>\x03\xbb\x07OR\x7f\x18`\xce'
+wallet = Wallet(seed=sk)
+
+>>> wallet.vk.encode().hex()
+'1d23c4c1571ae3a549b714c0908058ceb9c3a272808ec78f97a293120a17073d'
+```
+***
 ##### Signing things
 You can sign transactions, which is primarily what you use wallet keypairs for, or arbitrary data to prove you are the owner of a wallet.
 ```python
@@ -65,11 +75,99 @@ True
 False
 ```
 #### Sending Transactions
-
+For sending transactions, you need the IP address of a masternode so that Lampy knows where to send the raw transaction. Connections to masternodes are maintained in a class.
 ```python
 # Create a new wallet
 wallet = Wallet()
 
 client = LamdenClient(ip='127.0.0.1:8000', wallet=wallet)
+client.submit_transaction(contract='currency',
+                          function='transfer',
+                          kwargs={'to': 'jeff', 'from': 'stu'},
+                          stamps=10000)
 
+```
+#### Querying the Blockchain
+If you don't know what you want to do, you can browse the blockchain and the states of smart contracts to investigate how the system works. If you don't want to submit transactions, you can use a `Connection` object instead of a `LamdenClient`. However, a `LamdenClient` has all of the same methods as the `Connection`.
+```python
+wallet = Wallet()
+client_1 = LamdenClient(ip='127.0.0.1:8000', wallet=wallet)
+client_2 = Connection(ip='127.0.0.1:8000')
+
+>>> client_1.get_latest_block_hash() == client_2.get_latest_block_hash()
+True
+```
+***
+##### Ping
+```python
+client = Connection(ip='127.0.0.1:8000')
+
+>>> client.ping()
+{'status': 'online'}
+```
+***
+##### Get Contracts
+```python
+>>> client.get_contracts()
+['currency', 'election_house', 'swaps']
+```
+***
+##### Get Contract Code
+```python
+>>> client.get_contract_code('currency')
+
+supply = Variable()
+balances = Hash(default_value=0)
+
+@construct
+def seed():
+    seed_amount = 1_000_000_000
+    supply.set(seed_amount)
+    balances[ctx.caller] = seed_amount
+
+@export
+def transfer(amount, to):
+    sender = ctx.caller
+    balance = balances[sender]
+
+    assert balance >= amount
+
+    balances[sender] -= amount
+    balances[to] += amount
+
+@export
+def balance_of(account):
+    return balances[account]
+
+@export
+def total_supply():
+    return supply.get()
+
+@export
+def allowance(owner, spender):
+    return balances[owner, spender]
+
+@export
+def approve(amount, to):
+    sender = ctx.caller
+    balances[sender, to] += amount
+    return balances[sender, to]
+
+@export
+def transfer_from(amount, to, main_account):
+    sender = ctx.caller
+
+    assert balances[main_account, sender] >= amount
+    assert balances[main_account] >= amount
+
+    balances[main_account, sender] -= amount
+    balances[main_account] -= amount
+
+    balances[to] += amount
+```
+***
+##### Get Variable
+```python
+>>> client.get_variable(contract='currency', variable='balances', key='stu')
+{'value': 1_000_000}
 ```

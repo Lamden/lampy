@@ -1,6 +1,8 @@
 import hashlib
 import secrets
 
+POW_BYTES_DIFFICULTY = 0
+
 
 class SHA3POWBytes:
     @staticmethod

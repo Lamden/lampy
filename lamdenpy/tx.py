@@ -3,8 +3,8 @@ import capnp
 from cilantro_ee.core.messages.capnp_impl import capnp_struct as capnp_schema
 from decimal import Decimal
 import time
-from lampy.wallet import Wallet
-from lampy.pow import SHA3POWBytes
+from lamdenpy.wallet import Wallet
+from lamdenpy.pow import SHA3POWBytes
 
 transaction_capnp = capnp.load(os.path.dirname(capnp_schema.__file__) + '/transaction.capnp')
 

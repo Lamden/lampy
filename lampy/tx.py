@@ -1,6 +1,6 @@
 import os
 import capnp
-from cilantro_ee.messages import capnp as capnp_schema
+from cilantro_ee.core.messages.capnp_impl import capnp_struct as capnp_schema
 from decimal import Decimal
 import time
 from lampy.wallet import Wallet

@@ -1,8 +1,7 @@
 import hashlib
 import secrets
 
-POW_BYTES_DIFFICULTY = 0
-
+POW_BYTES_DIFFICULTY = (2 ** 256) - (2 ** 255) # REALLY SIMPLE PROOF
 
 class SHA3POWBytes:
     @staticmethod
